@@ -1,0 +1,3 @@
+[submodule "secrules-language-tests"]
+	path = secrules-language-tests
+	url = https://github.com/SpiderLabs/secrules-language-tests.git
