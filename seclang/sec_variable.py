@@ -2,11 +2,11 @@
 
 class SecVariable():
     def __init__(self, variable):
-        self.variable = variable
+        self.name = variable
 
     def __str__(self):
-        return "Variable: " + str(self.variable)
+        return "Variable: " + str(self.name)
 
     def evaluate(self, http_transaction):
-        return http_transaction.resolv_variable(self.variable)
+        return http_transaction.resolv_variable(self.name)
 
