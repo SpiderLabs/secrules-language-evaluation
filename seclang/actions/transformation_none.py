@@ -1,7 +1,7 @@
 
-from seclang.sec_action import SecAction
+from seclang.sec_action import SecAction, SecActionTransformation
 
-class transformation_none(SecAction):
+class transformation_none(SecActionTransformation):
     """
     https://github.com/SpiderLabs/ModSecurity/wiki/Reference-Manual#log
     """
