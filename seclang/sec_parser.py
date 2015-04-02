@@ -11,6 +11,9 @@ from sec_operator import *
 from sec_action import *
 from sec_rule import *
 
+import inspect
+from actions import *
+
 tokens = (
         "DIRECTIVE",
         "VARIABLE",
@@ -151,27 +154,31 @@ def p_actions(p):
     actions : CONTROL split actions
     """
     if len(p) == 2:
-        action = core_action(p[1])
+        action = sec_action(p[1])
         p[0] = [action]
     else:
-        action = core_action(p[1])
+        action = sec_action(p[1])
         p[0] = [action] + p[3]
 
 
-def core_action(action):
-    action_obj = None
+def sec_action(action):
+    action_class = None
 
-    if action.startswith("id:"):
-      action_obj = SecAction_Id(action)
-    elif action.startswith("phase:"):
-      action_obj = SecAction_Phase(action)
-    elif action.startswith("log"):
-      action_obj = SecAction_Log(action)
+    if action[:2] == "t:":
+        op = "transformation_" + str(action[2:])
+    else:
+        op = action.split(":")[0]
 
-    if action_obj == None:
-      action_obj = SecAction(action)
+    modules = inspect.getmembers(sys.modules["seclang.actions"], inspect.ismodule)
+    for n, p in modules:
+        if p.__package__ == "seclang.actions":
+            if op == n:
+                action_class = getattr(p, n)(action)
 
-    return action_obj
+    if action_class == None:
+        raise BaseException("Action not found: " + str(action) + "/" + str(op))
+
+    return action_class
 
 
 def p_operator(p):
