@@ -14,6 +14,9 @@ from sec_rule import *
 import inspect
 from actions import *
 
+filename = None
+lineno = None
+
 tokens = (
         "DIRECTIVE",
         "VARIABLE",
@@ -105,12 +108,12 @@ def p_secrulet(p):
     """
     if p[1] == "SecRule":
         if len(p) == 8:
-            p[0] = SecRule(p[1], p[3], p[6], None, p.lexer.lexdata, None, None)
+            p[0] = SecRule(p[1], p[3], p[6], None, p.lexer.lexdata, lineno, filename)
         else:
-            p[0] = SecRule(p[1], p[3], p[6], p[10], p.lexer.lexdata, None, None)
+            p[0] = SecRule(p[1], p[3], p[6], p[10], p.lexer.lexdata, lineno, filename)
 
     elif p[1] == "Include":
-        p[0] = SecInclude(p[3])
+        p[0] = SecInclude(p[3], filename)
     else:
         if len(p) == 4:
             p[0] = SecConfig(p[1], p[3])

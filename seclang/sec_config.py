@@ -1,14 +1,17 @@
 
+import os
 
 class SecInclude():
-    def __init__(self, filename):
-        self.filename = filename
+    def __init__(self, filename, current_config_file):
+        base = os.path.dirname(current_config_file)
+        self.filename = os.path.join(base, filename)
 
     def evaluate(self, core):
         rules = ""
+
         with open(self.filename) as f:
             rules = f.read().splitlines()
-        core.include(rules)
+        core.include(rules, self.filename)
 
 
 class SecConfig():

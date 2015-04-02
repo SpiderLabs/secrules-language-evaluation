@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import sys, getopt
+import os
 from seclang import seclang
 from http import dummy_http_parser as sec_transaction
 
@@ -22,6 +23,7 @@ def main(argv):
     secTransactions = None
     verbose = False
     rules = None
+    rules_file = None
     http_dump = None
 
     print_head()
@@ -41,24 +43,24 @@ def main(argv):
             print_help();
             sys.exit()
         elif opt in ("-r", "--rules"):
-            rules = arg
+            rules_file = os.path.abspath(arg)
         elif opt in ("-d", "--dump"):
             http_dump = arg
         elif opt == "-v":
             verbose = True
  
-    if rules == None or http_dump == None:
+    if rules_file == None or http_dump == None:
         print_help();
         sys.exit()
 
     try:
-        with open(rules) as f:
+        with open(rules_file) as f:
             rules = f.read().splitlines()
     except:
         print "Failed to open rules file: " + str(rules)
         sys.exit(2)
 
-    secCore = seclang.modsec(rules, verbose)
+    secCore = seclang.modsec(rules, rules_file, verbose)
 
     if verbose:
         print "Loaded " + str(len(secCore)) + " rules."

@@ -1,6 +1,7 @@
 
 import sys
-from sec_parser import *
+import sec_parser
+from sec_config import *
 from sec_action import *
 from sec_operator import *
 from sec_variable import *
@@ -10,8 +11,7 @@ from sec_log import *
 class SecCore():
     phase_names = ['REQUEST_HEADERS', 'REQUEST_BODY', 'RESPONSE_HEADERS', 'RESPONSE_BODY', 'LOGGING']
 
-    def __init__(self, rules, verbose = False):
-        self.rules = []
+    def __init__(self, rules, rules_file, verbose = False):
         self.verbose = verbose
 
         self.SecRuleEngine = "DetectionOnly"
@@ -44,16 +44,18 @@ class SecCore():
 
 
         self.phases = [[], [], [], [], []]
-        self.__parse(rules)
+        self.__parse(rules, rules_file)
 
     def __len__(self):
         return sum([len(i) for i in self.phases])
 
 
-    def include(self, content):
+    def include(self, content, filename = None):
         cont = ""
+        lineno = 0
         for l in content:
 
+            lineno = lineno + 1
             if len(l) <= 0:
                 continue
             if l[0] == "#":
@@ -69,22 +71,20 @@ class SecCore():
             if self.verbose:
                 print "###" + str(l)
 
-            rule = yacc.parse(l)
+            sec_parser.lineno = lineno
+            sec_parser.filename = filename
+            rule = sec_parser.yacc.parse(l)
 
             if isinstance(rule, SecConfig):
                 rule.evaluate(self)
             elif isinstance(rule, SecInclude):
                 rule.evaluate(self)
             else:
-                self.rules.append(rule)
+                self.phases[rule.phase - 1].append(rule)
 
         
-        for rule in self.rules:
-            self.phases[rule.phase - 1].append(rule)
-
-
-    def __parse(self, content):
-        return self.include(content)
+    def __parse(self, content, filename = None):
+        return self.include(content, filename)
 
 
     def evaluate(self, http_transaction):
