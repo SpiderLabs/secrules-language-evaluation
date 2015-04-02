@@ -6,7 +6,7 @@ class severity(SecActionMetadata):
     https://github.com/SpiderLabs/ModSecurity/wiki/Reference-Manual#severity
     """
     def evaluate(self, core):
-        a = self.action[7:]
+        a = self.action[9:]
         if a[0] == "'":
             a = a[1:-1]
 
