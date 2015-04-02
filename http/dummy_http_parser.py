@@ -4,6 +4,7 @@ import re
 from BaseHTTPServer import BaseHTTPRequestHandler
 from StringIO import StringIO
 from seclang.sec_transaction_stub import SecTransactionStub
+from urlparse import parse_qs
 
 
 def parse(content):
@@ -25,9 +26,22 @@ class HTTPRequest(BaseHTTPRequestHandler):
 
 class SecTransaction(SecTransactionStub, HTTPRequest):
     def __init__(self, plain):
-        SecTransactionStub.__init__(self)
         HTTPRequest.__init__(self, plain)
+        SecTransactionStub.__init__(self)
         self.plain = plain
+
+        args = {}
+        try:
+            url = ' '.join(self.path.split("?")[1:])
+            args = parse_qs(url)
+        except:
+            pass
+
+        # FIXME: this is not what we want to do.
+        for k in args:
+            v = args[k]
+            self.ARGS[k] = v[0]
+
 
     def resolv_variable(self, variable):
         # TODO: Missing a lot of variables here.
