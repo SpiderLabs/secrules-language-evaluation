@@ -124,29 +124,10 @@ class SecCore():
                 if not ret:
                     debug_log(9, "No match, not chained -> mode NEXT_RULE.")
                 else:
+                    debug_log(9, "Matched")
                     for a in rule.action:
                         if not a.pre_process:
-                            if type(a) is SecCoreAction_Allow:
-                                print "ALLOW"
-                                return
-                            elif type(a) is SecCoreAction_Log:
-                                audit_log(rule)
-                                error_log(rule)
-                            elif type(a) is SecCoreAction_Deny:
-                                print "DENY"
-                                return
-                            elif type(a) is SecCoreAction_Block:
-                                print "BLOCK"
-                                return
-                            elif type(a) is SecCoreAction_Status:
-                                print "STATUS"
-                                return
-                            elif type(a) is SecCoreAction_Skip:
-                                skip = a.evaluate()
-                                return
-
-                            else:
-                                print " ** ops, not sure what to do..."
+                               print " ** ops, not sure what to do..."
 
 
 
