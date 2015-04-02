@@ -1,14 +1,10 @@
 
-from seclang.sec_action import SecAction
+from seclang.sec_action import SecActionMetadata
  
-class msg(SecAction):
+class msg(SecActionMetadata):
     """
     https://github.com/SpiderLabs/ModSecurity/wiki/Reference-Manual#msg
     """
-    def __init__(self, action):
-        SecAction.__init__(self, action)
-        self.pre_process = True
-
     def evaluate(self, core):
         a = self.action[4:]
         if a[0] == "'":

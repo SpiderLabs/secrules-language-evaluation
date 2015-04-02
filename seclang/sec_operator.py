@@ -33,12 +33,16 @@ class SecOperator():
         if config != None:
             self.path = os.path.dirname(config)
 
+        self.op = self.operator.split(" ")[0]
+        self.arg = ' '.join(self.operator.split(" ")[1:])
+
+
     def __str__(self):
         return "Operator: " + str(self.operator)
 
     def evaluate(self, variable, http_transaction):
-        op = self.operator.split(" ")[0]
-        comp = ' '.join(self.operator.split(" ")[1:])
+        op = self.op
+        comp = self.arg
 
         try:
             n_variable = int(variable)

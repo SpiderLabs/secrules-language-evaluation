@@ -1,14 +1,10 @@
 
-from seclang.sec_action import SecAction
+from seclang.sec_action import SecActionMetadata
 
-class severity(SecAction):
+class severity(SecActionMetadata):
     """
     https://github.com/SpiderLabs/ModSecurity/wiki/Reference-Manual#severity
     """
-    def __init__(self, action):
-        SecAction.__init__(self, action)
-        self.pre_process = True
-
     def evaluate(self, core):
         a = self.action[7:]
         if a[0] == "'":

@@ -1,14 +1,10 @@
 
-from seclang.sec_action import SecAction
+from seclang.sec_action import SecActionMetadata
  
-class phase(SecAction):
+class phase(SecActionMetadata):
     """
     https://github.com/SpiderLabs/ModSecurity/wiki/Reference-Manual#phase
     """
-    def __init__(self, action):
-        SecAction.__init__(self, action)
-        self.pre_process = True
-
     def evaluate(self, core):
         phase = self.action[6:]
         if phase == "request":
