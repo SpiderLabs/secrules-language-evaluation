@@ -1,11 +1,28 @@
 
-import re
-from libinjection import *
-import ipaddress
 import urllib
-import GeoIP
-from sec_utils import *
 import os
+import re
+
+from sec_utils import *
+
+libinjection_support = True
+ipaddress_support = True
+geoip_support = True
+
+try:
+    from libinjection import *
+except:
+    libinjection_support = False
+
+try:
+    import ipaddress
+except:
+    ipaddress_support = False
+
+try:
+    import GeoIP
+except:
+    geoip_support = False
 
 
 class SecOperator():
@@ -63,23 +80,29 @@ class SecOperator():
             return False
  
         elif op == "@detectXSS":
-            client9 = libinjection.xss(str(variable))
-            return client9 == 1
+            if libinjection_support:
+                client9 = libinjection.xss(str(variable))
+                return client9 == 1
+            return False
         elif op == "@detectSQLi":
-            s = sqli_state()
-            sqli_init(s, str(variable), libinjection.FLAG_QUOTE_NONE | libinjection.FLAG_SQL_ANSI)
-            client9 = libinjection.is_sqli(s)
-            return client9 == 1
+            if libinjection_support:
+                s = sqli_state()
+                sqli_init(s, str(variable), libinjection.FLAG_QUOTE_NONE | libinjection.FLAG_SQL_ANSI)
+                client9 = libinjection.is_sqli(s)
+                return client9 == 1
+            return False
         elif op == "@strmatch":
             for c in str(comp).split("|"):
                 if str(c) in str(variable):
                     return True
             return False
         elif op == "@ipMatch":
-            try:
-                return ipaddress.ip_address(unicode(variable)) in ipaddress.ip_network(unicode(comp), strict=False)
-            except:
-                return False
+            if ipaddress_support:
+                try:
+                    return ipaddress.ip_address(unicode(variable)) in ipaddress.ip_network(unicode(comp), strict=False)
+                except:
+                    return False
+            return False
         elif op == "@verifyCC":
             m = re.search(comp, variable)
             if m == None:
@@ -219,12 +242,13 @@ class SecOperator():
                 return False
 
             # FIXME: Need to open the GeoIP.dat from the correct directory.
-            gi = GeoIP.open("GeoIP.dat", GeoIP.GEOIP_STANDARD)
-            z = gi.record_by_addr(str(variable))
+            if geoip_support:
+                gi = GeoIP.open("GeoIP.dat", GeoIP.GEOIP_STANDARD)
+                z = gi.record_by_addr(str(variable))
 
+                return not z == None
 
-            return not z == None
-
+            return False
 
         print " *** WARNING: I don't know anything about this operator: " + str(op)
 
