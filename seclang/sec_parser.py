@@ -13,6 +13,7 @@ from sec_rule import *
 
 import inspect
 from actions import *
+from operators import *
 
 filename = None
 lineno = None
@@ -164,6 +165,22 @@ def p_actions(p):
         p[0] = [action] + p[3]
 
 
+def sec_operator(operator, config):
+    operator_class = None
+
+    op = operator[0:].split(" ")[0].lower()
+
+    modules = inspect.getmembers(sys.modules["seclang.operators"], inspect.ismodule)
+    for n, p in modules:
+        if p.__package__ == "seclang.operators":
+            if op == n:
+                operator_class = getattr(p, n)(operator, config)
+
+    if operator_class == None:
+        raise BaseException("Operator not found: " + str(operator) + "/" + str(op))
+
+    return operator_class
+
 def sec_action(action):
     action_class = None
 
@@ -188,7 +205,7 @@ def p_operator(p):
     """
     operator : OPERATOR
     """
-    p[0] = SecOperator(p[1], config="")
+    p[0] = sec_operator(p[1], config=filename)
 
 
 def p_error(p):

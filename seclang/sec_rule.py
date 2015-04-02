@@ -1,16 +1,16 @@
 
 
 from sec_operator import *
-
+from sec_log import *
 
 class SecRule():
-    def __init__(self, directive, variable, operator, action, rule, line, filename):
+    def __init__(self, directive, input, operator, action, rule, line, filename):
 
         if not isinstance(operator, SecOperator):
             operator = SecOperator("@pm " + operator)
 
         self.directive = directive
-        self.variable = variable
+        self.input = input
         self.operator = operator
         self.action = action
         self.line = line
@@ -27,7 +27,7 @@ class SecRule():
 
     def __str__(self):
         rule = "Rule: " + str(self.directive) + " " + \
-            str(self.variable) + " " + \
+            str(self.input) + " " + \
             str(self.operator) + " " + \
             str(self.action) + " @" + \
             str(self.filename) + ":" + str(self.line)
@@ -35,7 +35,15 @@ class SecRule():
         return rule
 
     def evaluate(self, http_transaction):
-        variable = self.variable.evaluate(http_transaction)
-        res = self.operator.evaluate(variable, http_transaction)
+
+        debug_log(4, "Executing operator \"" + str(self.operator.name) + "\" with param \"" +
+                str(self.operator.argument) + "\" against " + str(self.input) + ".")
+
+        self.input.setTransaction(http_transaction)
+        input_value = self.input.content()
+
+        debug_log(9, "Target value: \"" + str(input_value) + "\"")
+
+        res = self.operator.evaluate(self.input, http_transaction)
         return res
 

@@ -5,6 +5,7 @@ import sys, getopt
 import json
 from os import listdir, walk
 from os.path import isfile, join
+from seclang.sec_parser import sec_operator
 
 from seclang.sec_operator import *
 
@@ -26,7 +27,7 @@ def play_test(filename):
         if not 'param' in t:
             t['param'] = ""
 
-        op = SecOperator(str("@" + t['name'] + " " + t['param']), config=filename)
+        op = sec_operator(t['name'] + " " + t['param'], filename)
         ret = op.evaluate(t['input'], None)
 
         if int(t['ret']) == 0:
@@ -40,6 +41,7 @@ def play_test(filename):
             print " - received: " + str(ret)
             print " -     file: " + str(filename) + " number: " + str(i)
             print " -     test: " + str(t)
+            print " - operator: " + str(op.__class__)
 
 
 def main(argv):
