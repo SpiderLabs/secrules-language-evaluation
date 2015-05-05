@@ -3,9 +3,6 @@ import urllib
 import os
 import re
 
-from sec_utils import *
-
-
 class SecOperator():
     def __init__(self, operator, config=None):
         self.operator = operator
