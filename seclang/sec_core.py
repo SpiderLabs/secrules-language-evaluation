@@ -56,16 +56,29 @@ class SecCore():
         for l in content:
 
             lineno = lineno + 1
+            # Skip commented or empty lines
             if len(l) <= 0:
                 continue
             if l[0] == "#":
                 continue
+            # If there is a line continuation append the next line
             if l[-1:] == '\\':
-                cont = cont + l[:-1]
+                subl = l[:-1]
+                # Remove any trailing spaces greater than one space
+                trailingSpaces = len(subl) - len(subl.rstrip())
+                if(trailingSpaces > 1):
+                    trailingSpaces -= 1
+                    subl = subl[:-trailingSpaces]     
+                # always strip leading spaces to remove tabs
+                cont = cont + (subl).lstrip()
+                # make sure that there is at most one trailing space
                 continue
-
+            
+            # If we got here we're at the last line of a continuation
+            # Or continuation is empty (non-continuated rule)
             if cont != "":
-                l = cont + l
+                # There should be no problem stripping whitespace here
+                l = cont + l.strip()
                 cont = ""
 
             if self.verbose:
@@ -73,6 +86,9 @@ class SecCore():
 
             sec_parser.lineno = lineno
             sec_parser.filename = filename
+
+            # We have extracted the rule, give it to the parser
+            print l
             rule = sec_parser.yacc.parse(l)
 
             if isinstance(rule, SecConfig):

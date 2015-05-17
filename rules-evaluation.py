@@ -10,12 +10,13 @@ def print_help():
 
 
 def print_head():
-    print "ModSecurity seclang evaluation"
-    print "This is a PoC. Not to use in production. It may let you down."
-    print " "
-    print "Report bugs on GitHub:"
-    print "https://github.com/SpiderLabs/secrules-language-evaluation/issues/"
-    print " "
+    print \
+"""ModSecurity seclang evaluation
+This is a PoC. Not to use in production. It may let you down.
+
+Report bugs on GitHub:"
+https://github.com/SpiderLabs/secrules-language-evaluation/issues/
+"""
 
 
 def main(argv):
@@ -29,6 +30,7 @@ def main(argv):
     print_head()
 
     try:
+        # Take in our arguments onfail or get the wrong number, print help
         opts, args = getopt.getopt(argv[1:],"vhr:d:", ["rules=","dump="])
     except getopt.GetoptError:
         print_help();
@@ -37,7 +39,7 @@ def main(argv):
         print_help();
         sys.exit(2)
 
-
+    # Parse out the values passed by the user
     for opt, arg in opts:
         if opt == "-h":
             print_help();
@@ -52,15 +54,16 @@ def main(argv):
     if rules_file == None or http_dump == None:
         print_help();
         sys.exit()
-
     try:
-        with open(rules_file) as f:
-            rules = f.read().splitlines()
+        # Read in our rules files each line without newlines
+        rules = open(rules_file,'r').read().splitlines()
     except:
         print "Failed to open rules file: " + str(rules)
         sys.exit(2)
-
+    
     secCore = seclang.modsec(rules, rules_file, verbose)
+    print secCore
+    sys.exit()
 
     if verbose:
         print "Loaded " + str(len(secCore)) + " rules."
