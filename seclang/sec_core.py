@@ -88,7 +88,6 @@ class SecCore():
             sec_parser.filename = filename
 
             # We have extracted the rule, give it to the parser
-            print l
             rule = sec_parser.yacc.parse(l)
 
             if isinstance(rule, SecConfig):

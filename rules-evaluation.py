@@ -62,8 +62,6 @@ def main(argv):
         sys.exit(2)
     
     secCore = seclang.modsec(rules, rules_file, verbose)
-    print secCore
-    sys.exit()
 
     if verbose:
         print "Loaded " + str(len(secCore)) + " rules."
